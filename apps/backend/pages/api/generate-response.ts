@@ -43,9 +43,9 @@ export default async function handler(
     const aiResponse = response.data.choices[0].message.content;
     const result: GenerateResponseResponse = { reply: aiResponse };
     return res.status(200).json(result);
-  } catch (error: any) {
+  } catch (error) {
     return res
       .status(500)
-      .json({ error: "Error processing request", details: error.message });
+      .json({ error: "Error processing request", details: error });
   }
 }
