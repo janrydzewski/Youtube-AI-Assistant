@@ -1,0 +1,30 @@
+{
+  "name": "youtube_ai_assistant",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --filter=apps/** --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janrydzewski/youtube_ai_assistant.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/janrydzewski/youtube_ai_assistant/issues"
+  },
+  "homepage": "https://github.com/janrydzewski/ypoiuyeoutube_ai_assistant#readme",
+  "description": "",
+  "devDependencies": {
+    "turbo": "^2.4.4"
+  },
+  "packageManager": "npm@10.9.2"
+}
