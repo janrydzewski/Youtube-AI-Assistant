@@ -27,7 +27,7 @@ export default async function handler(
           role: "system",
           content: `Generate a reply to the following comment with a ${
             tone || "neutral"
-          } tone:`,
+          } tone. Provide a single, complete sentence.`,
         },
         { role: "user", content: comment },
       ],
