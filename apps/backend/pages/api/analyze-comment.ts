@@ -1,9 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { sendDeepseekRequest } from "@/deepseekRequest";
-import type {
-  GenerateResponseRequest,
-  GenerateResponseResponse,
-} from "@/models/generate-response";
+import {
+  AnalyzeCommentRequest,
+  AnalyzeCommentResponse,
+  Sentiment,
+} from "@/models/analyze-comment";
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,7 +13,7 @@ export default async function handler(
   if (req.method !== "POST")
     return res.status(405).json({ error: "Method Not Allowed" });
 
-  const { comment, tone } = req.body as GenerateResponseRequest;
+  const { comment } = req.body as AnalyzeCommentRequest;
   if (!comment) return res.status(400).json({ error: "Comment is required" });
 
   try {
@@ -21,18 +22,27 @@ export default async function handler(
       messages: [
         {
           role: "system",
-          content: `Generate a reply to the following comment with a ${
-            tone || "neutral"
-          } tone. Provide a single, complete sentence.`,
+          content:
+            "Analyze the sentiment of the following comment. Respond with only one word: positive, negative, or neutral.",
         },
         { role: "user", content: comment },
       ],
-      temperature: 0.7,
-      max_tokens: 30,
+      temperature: 0.0,
+      max_tokens: 10,
     };
     const response = await sendDeepseekRequest(data);
-    const aiResponse = response.choices[0].message.content;
-    const result: GenerateResponseResponse = { reply: aiResponse };
+    const sentimentStr = response.choices[0].message.content
+      .trim()
+      .toLowerCase();
+    let enumSentiment: Sentiment;
+    if (sentimentStr === Sentiment.Positive) {
+      enumSentiment = Sentiment.Positive;
+    } else if (sentimentStr === Sentiment.Negative) {
+      enumSentiment = Sentiment.Negative;
+    } else {
+      enumSentiment = Sentiment.Neutral;
+    }
+    const result: AnalyzeCommentResponse = { sentiment: enumSentiment };
     return res.status(200).json(result);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
