@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { sendDeepseekRequest } from "@/deepseekRequest";
+import { sendDeepseekRequest } from "@/pages/api/deepseek/deepseekRequest";
 import type {
   GenerateResponseRequest,
   GenerateResponseResponse,
@@ -34,7 +34,6 @@ export default async function handler(
     const aiResponse = response.choices[0].message.content;
     const result: GenerateResponseResponse = { reply: aiResponse };
     return res.status(200).json(result);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return res
       .status(500)

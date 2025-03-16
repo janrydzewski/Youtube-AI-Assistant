@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { sendDeepseekRequest } from "@/deepseekRequest";
+import { sendDeepseekRequest } from "@/pages/api/deepseek/deepseekRequest";
 import {
   AnalyzeCommentRequest,
   AnalyzeCommentResponse,
@@ -44,7 +44,6 @@ export default async function handler(
     }
     const result: AnalyzeCommentResponse = { sentiment: enumSentiment };
     return res.status(200).json(result);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return res
       .status(500)
