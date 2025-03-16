@@ -3,7 +3,7 @@ import { sendDeepseekRequest } from "@/pages/api/deepseek/deepseekRequest";
 import type {
   GenerateResponseRequest,
   GenerateResponseResponse,
-} from "@/models/generate-response";
+} from "@shared/models/models";
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,9 +21,9 @@ export default async function handler(
       messages: [
         {
           role: "system",
-          content: `Generate a reply to the following comment with a ${
+          content: `Imagine you're a YouTuber who just posted a video. Generate a reply to the following comment in a ${
             tone || "neutral"
-          } tone. Provide a single, complete sentence.`,
+          } tone, using a single, complete sentence.`,
         },
         { role: "user", content: comment },
       ],

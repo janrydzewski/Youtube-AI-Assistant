@@ -1,10 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { sendDeepseekRequest } from "@/pages/api/deepseek/deepseekRequest";
-import {
-  AnalyzeCommentRequest,
-  AnalyzeCommentResponse,
-  Sentiment,
-} from "@/models/analyze-comment";
+import { AnalyzeCommentRequest, AnalyzeCommentResponse, Sentiment } from "@shared/models/models";
+
 
 export default async function handler(
   req: NextApiRequest,
