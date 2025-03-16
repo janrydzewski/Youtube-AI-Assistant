@@ -37,21 +37,3 @@ export async function youtubeRequest<T>(config: {
   return response.data;
 }
 
-export async function fetchYoutubeVideos(pageToken?: string) {
-  if (!process.env.YOUTUBE_CHANNEL_ID) {
-    throw new Error("Missing environment variable: YOUTUBE_CHANNEL_ID");
-  }
-
-  return youtubeRequest<any>({
-    method: "GET",
-    path: "/search",
-    params: {
-      channelId: process.env.YOUTUBE_CHANNEL_ID,
-      part: "snippet,id",
-      order: "date",
-      maxResults: 10,
-      ...(pageToken ? { pageToken } : {}),
-    },
-    envKeys: ["YOUTUBE_API_KEY", "YOUTUBE_CHANNEL_ID"],
-  });
-}
