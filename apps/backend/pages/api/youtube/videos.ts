@@ -13,10 +13,16 @@ export default async function handler(
 
   try {
     const data = await fetchYoutubeVideos(pageToken);
-    const { items, nextPageToken, prevPageToken, pageInfo } = data;
-    return res
-      .status(200)
-      .json({ items, nextPageToken, prevPageToken, pageInfo });
+    const filteredItems = data.items.filter(
+      (item: any) => item.id && item.id.kind === "youtube#video"
+    );
+    const { nextPageToken, prevPageToken, pageInfo } = data;
+    return res.status(200).json({
+      items: filteredItems,
+      nextPageToken,
+      prevPageToken,
+      pageInfo,
+    });
   } catch (error: any) {
     return res
       .status(500)
