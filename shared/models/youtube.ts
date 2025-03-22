@@ -46,3 +46,17 @@ export interface Author {
   profileImageUrl: string;
   authorChannelUrl: string;
 }
+
+export interface AddReplyRequest {
+  commentId: string;
+  text: string;
+}
+
+export interface AddReplyResponse {
+  reply: {
+    id: string;
+    text: string;
+    author: string;
+    publishedAt: Date;
+  };
+}

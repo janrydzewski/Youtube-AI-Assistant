@@ -19,15 +19,24 @@ export async function youtubeRequest<T>(config: {
   path: string;
   params?: Record<string, any>;
   data?: any;
+  accessToken?: string;
 }): Promise<T> {
   const url = config.path;
 
   const defaultParams = { key: YOUTUBE_API_KEY };
   const finalParams = { ...defaultParams, ...config.params };
 
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (config.accessToken) {
+    headers["Authorization"] = `Bearer ${config.accessToken}`;
+  }
+
   const axiosConfig: AxiosRequestConfig = {
     method: config.method,
     url,
+    headers,
     params: finalParams,
     data: config.data,
   };
@@ -38,11 +47,13 @@ export async function youtubeRequest<T>(config: {
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(
-        `YouTube API request failed: ${
-          error.response?.status
-        } - ${JSON.stringify(error.response?.data)}`
+        `YouTube API request failed: ${error.response?.status} - ${JSON.stringify(
+          error.response?.data
+        )}`
       );
     }
     throw error;
   }
 }
+
+
