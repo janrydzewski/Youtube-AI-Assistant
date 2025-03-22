@@ -21,8 +21,7 @@ console.log("NextAuth is about to load with these settings:", {
   googleClientSecret,
   nextAuthSecret,
 });
-
-export default NextAuth({
+const handler = NextAuth({
   providers: [
     GoogleProvider({
       clientId: googleClientId,
@@ -53,3 +52,5 @@ export default NextAuth({
   },
   secret: nextAuthSecret,
 });
+
+export { handler as GET, handler as POST };

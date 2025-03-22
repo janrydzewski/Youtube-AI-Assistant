@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { sendDeepseekRequest } from "@/pages/api/deepseek/deepseekRequest";
+import { sendDeepseekRequest } from "@/app/api/deepseek/deepseekRequest";
 import { AnalyzeCommentResponse, Sentiment } from "@shared/models/models";
 
 const MODEL = "deepseek/deepseek-chat:free";
