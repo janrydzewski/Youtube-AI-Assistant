@@ -2,7 +2,6 @@ node_modules/
 apps/**/node_modules/
 *.log
 .next/
-apps/backend/.next/
 build/
 .turbo/
 .env
