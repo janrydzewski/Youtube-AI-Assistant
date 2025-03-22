@@ -7,3 +7,7 @@ export enum Sentiment {
 export interface AnalyzeCommentResponse {
   sentiment: Sentiment;
 }
+
+export interface GenerateResponseResponse {
+  reply: string;
+}
