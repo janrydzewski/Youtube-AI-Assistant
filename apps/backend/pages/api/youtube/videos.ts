@@ -7,6 +7,11 @@ import {
 import type { NextApiRequest, NextApiResponse } from "next";
 import { youtubeRequest } from "./youtubeRequest";
 
+const YOUTUBE_CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID;
+if (!YOUTUBE_CHANNEL_ID) {
+  throw new Error("Missing environment variable: YOUTUBE_CHANNEL_ID");
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<VideosResponse | { error: string; details?: any }>
@@ -15,25 +20,20 @@ export default async function handler(
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const pageToken = req.query.pageToken ? req.query.pageToken.toString() : "";
-  if (!process.env.YOUTUBE_CHANNEL_ID) {
-    return res
-      .status(500)
-      .json({ error: "Missing environment variable: YOUTUBE_CHANNEL_ID" });
-  }
+  const pageToken =
+    typeof req.query.pageToken === "string" ? req.query.pageToken : "";
 
   try {
     const data = await youtubeRequest<any>({
       method: "GET",
       path: "/search",
       params: {
-        channelId: process.env.YOUTUBE_CHANNEL_ID,
+        channelId: YOUTUBE_CHANNEL_ID,
         part: "snippet,id",
         order: "date",
         maxResults: 10,
-        ...(pageToken ? { pageToken } : {}),
+        ...(pageToken && { pageToken }),
       },
-      envKeys: ["YOUTUBE_API_KEY", "YOUTUBE_CHANNEL_ID"],
     });
 
     const filteredItems = data.items.filter(
@@ -42,9 +42,9 @@ export default async function handler(
 
     const mappedItems: VideosBody[] = filteredItems.map((item: any) => {
       const thumb: Thumbnail = {
-        url: item.snippet.thumbnails.default.url || "",
-        width: item.snippet.thumbnails.default.width || 0,
-        height: item.snippet.thumbnails.default.height || 0,
+        url: item.snippet.thumbnails?.default?.url || "",
+        width: item.snippet.thumbnails?.default?.width || 0,
+        height: item.snippet.thumbnails?.default?.height || 0,
       };
 
       return {
@@ -63,9 +63,9 @@ export default async function handler(
       prevPageToken: data.prevPageToken,
     };
 
-    const channelName = filteredItems[0]?.snippet.channelTitle || "Unknown";
+    const channelName = filteredItems[0]?.snippet?.channelTitle || "Unknown";
     const channelId =
-      filteredItems[0]?.snippet.channelId || process.env.YOUTUBE_CHANNEL_ID;
+      filteredItems[0]?.snippet?.channelId || YOUTUBE_CHANNEL_ID;
 
     const responseBody: VideosResponse = {
       channelName,
@@ -75,9 +75,14 @@ export default async function handler(
     };
 
     return res.status(200).json(responseBody);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    let errorMessage = "Error fetching videos";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      console.error("Error fetching videos:", error);
+    }
     return res
       .status(500)
-      .json({ error: "Error fetching videos", details: error.message });
+      .json({ error: "Error fetching videos", details: errorMessage });
   }
 }

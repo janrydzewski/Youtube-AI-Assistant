@@ -15,8 +15,10 @@ export default async function handler(
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { videoId, pageToken } = req.query;
-  if (!videoId || typeof videoId !== "string") {
+  const videoId = typeof req.query.videoId === "string" ? req.query.videoId : null;
+  const pageToken = typeof req.query.pageToken === "string" ? req.query.pageToken : "";
+
+  if (!videoId) {
     return res.status(400).json({ error: "videoId parameter is required" });
   }
 
@@ -28,12 +30,11 @@ export default async function handler(
         videoId,
         part: "snippet",
         maxResults: 10,
-        ...(pageToken ? { pageToken } : {}),
+        ...(pageToken && { pageToken }),
       },
-      envKeys: ["YOUTUBE_API_KEY"],
     });
 
-    const { items, nextPageToken, prevPageToken, pageInfo } = data;
+    const { items, nextPageToken, prevPageToken, pageInfo: apiPageInfo } = data;
 
     const mappedItems: CommentBody[] = items.map((item: any) => {
       const snippet = item.snippet;
@@ -58,11 +59,11 @@ export default async function handler(
       };
     });
 
-    const channelId = items[0]?.snippet.channelId ?? "UnknownChannel";
+    const channelId = items[0]?.snippet?.channelId ?? "UnknownChannel";
 
     const responsePageInfo: PageInfo = {
-      totalResults: pageInfo?.totalResults ?? 0,
-      resultsPerPage: pageInfo?.resultsPerPage ?? 10,
+      totalResults: apiPageInfo?.totalResults ?? 0,
+      resultsPerPage: apiPageInfo?.resultsPerPage ?? 10,
       nextPageToken,
       prevPageToken,
     };
@@ -74,9 +75,14 @@ export default async function handler(
     };
 
     return res.status(200).json(responseBody);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    let errorMessage = "Error fetching comments";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      console.error("Error fetching comments:", error);
+    }
     return res
       .status(500)
-      .json({ error: "Error fetching comments", details: error.message });
+      .json({ error: "Error fetching comments", details: errorMessage });
   }
 }

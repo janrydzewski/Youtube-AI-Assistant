@@ -10,7 +10,7 @@ export default async function handler(
   }
 
   const { handle } = req.body as { handle?: string };
-  if (!handle) {
+  if (!handle || typeof handle !== "string" || handle.trim() === "") {
     return res
       .status(400)
       .json({ error: "Handle (e.g. @ExampleChannel) is required" });
@@ -23,10 +23,9 @@ export default async function handler(
       params: {
         part: "snippet",
         type: "channel",
-        q: handle,
+        q: handle.trim(),
         maxResults: 1,
       },
-      envKeys: ["YOUTUBE_API_KEY"],
     });
 
     if (!data.items || data.items.length === 0) {
@@ -44,13 +43,18 @@ export default async function handler(
 
     return res.status(200).json({
       message: "YouTube channel ID updated",
-      handle,
+      handle: handle.trim(),
       channelId,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    let errorMessage = "Error setting channel ID from handle";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      console.error("Error setting channel ID from handle:", error);
+    }
     return res.status(500).json({
       error: "Error setting channel ID from handle",
-      details: error.message,
+      details: errorMessage,
     });
   }
 }
