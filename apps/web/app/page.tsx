@@ -3,22 +3,20 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Loader from "./components/Loader";
+import { AuthStatus } from "./models/AuthStatus";
 
 export default function HomePage() {
   const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (status === AuthStatus.Authenticated) {
       router.push("/dashboard");
-    } else if (status === "unauthenticated") {
+    } else if (status === AuthStatus.Unauthenticated) {
       router.push("/login");
     }
   }, [status, router]);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-      <p>Przekierowywanie...</p>
-    </div>
-  );
+  return <Loader />;
 }

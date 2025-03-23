@@ -1,33 +1,26 @@
 "use client";
 
+import React from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
 import LoginButton from "./components/LoginButton";
 import Loader from "../components/Loader";
+import { useAuthRedirect } from "../hooks/useAuthRedirect";
+import { AuthStatus } from "../models/AuthStatus";
 
 export default function LoginPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { status } = useSession();
+  useAuthRedirect("/dashboard");
 
-  useEffect(() => {
-    if (session) {
-      router.push("/dashboard");
-    }
-  }, [router, session]);
-
-  if (status === "loading") {
+  if (status === AuthStatus.Loading) {
     return <Loader />;
   }
 
-  if (status === "unauthenticated") {
+  if (status === AuthStatus.Unauthenticated) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white px-4">
-        <h1 className="text-4xl font-bold mb-6">Witaj w aplikacji</h1>
-        <p className="mb-8 text-lg">
-          Zaloguj się przy użyciu Google, aby kontynuować.
-        </p>
-        <LoginButton />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 p-4">
+        <div className="bg-white w-full max-w-xl rounded-3xl p-16 shadow-xl flex overflow-hidden justify-center">
+          <LoginButton />
+        </div>
       </div>
     );
   }

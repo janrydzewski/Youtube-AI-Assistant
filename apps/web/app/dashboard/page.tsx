@@ -6,6 +6,7 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Loader from "../components/Loader";
+import { AuthStatus } from "../models/AuthStatus";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -17,15 +18,15 @@ export default function DashboardPage() {
     }
   }, [session, status, router]);
 
-  if (status === "loading") {
+  if (status === AuthStatus.Loading) {
     return <Loader />;
   }
 
   if (!session) return null;
 
-  if (status === "authenticated") {
+  if (status === AuthStatus.Authenticated) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white px-4 py-8">
+      <div className="min-h-screen bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 p-4">
         <header className="flex items-center justify-between mb-8">
           <h1 className="text-4xl font-bold">Dashboard</h1>
           <button
