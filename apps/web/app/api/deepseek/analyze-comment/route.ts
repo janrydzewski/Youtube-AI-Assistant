@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 import { sendDeepseekRequest } from "@/app/api/deepseek/deepseekRequest";
 import { AnalyzeCommentResponse, Sentiment } from "@shared/models/models";
 
@@ -8,25 +8,23 @@ const MAX_TOKENS = 10;
 const SYSTEM_PROMPT =
   "Analyze the sentiment of the following comment. Respond with only one word: positive, negative, or neutral.";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
-
-  if (
-    !req.body ||
-    typeof req.body.comment !== "string" ||
-    req.body.comment.trim() === ""
-  ) {
-    return res.status(400).json({ error: "Comment is required" });
-  }
-
-  const comment: string = req.body.comment.trim();
-
+export async function POST(request: Request) {
   try {
+    const body = await request.json();
+
+    if (
+      !body ||
+      typeof body.comment !== "string" ||
+      body.comment.trim() === ""
+    ) {
+      return NextResponse.json(
+        { error: "Comment is required" },
+        { status: 400 }
+      );
+    }
+
+    const comment: string = body.comment.trim();
+
     const requestPayload = {
       model: MODEL,
       messages: [
@@ -46,9 +44,10 @@ export default async function handler(
       response.choices.length === 0 ||
       !response.choices[0]?.message?.content
     ) {
-      return res
-        .status(500)
-        .json({ error: "Invalid response from sentiment analysis service" });
+      return NextResponse.json(
+        { error: "Invalid response from sentiment analysis service" },
+        { status: 500 }
+      );
     }
 
     const sentimentStr = response.choices[0].message.content
@@ -56,24 +55,25 @@ export default async function handler(
       .toLowerCase();
 
     let enumSentiment: Sentiment;
-    if (sentimentStr === Sentiment.Positive) {
+    if (sentimentStr === "positive") {
       enumSentiment = Sentiment.Positive;
-    } else if (sentimentStr === Sentiment.Negative) {
+    } else if (sentimentStr === "negative") {
       enumSentiment = Sentiment.Negative;
     } else {
       enumSentiment = Sentiment.Neutral;
     }
 
     const result: AnalyzeCommentResponse = { sentiment: enumSentiment };
-    return res.status(200).json(result);
+    return NextResponse.json(result);
   } catch (error: unknown) {
     let errorMessage = "Error processing request";
     if (error instanceof Error) {
       errorMessage = error.message;
       console.error("Error processing request:", error);
     }
-    return res
-      .status(500)
-      .json({ error: "Error processing request", details: errorMessage });
+    return NextResponse.json(
+      { error: "Error processing request", details: errorMessage },
+      { status: 500 }
+    );
   }
 }

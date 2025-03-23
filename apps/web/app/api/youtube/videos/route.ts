@@ -1,27 +1,20 @@
+import { NextResponse } from "next/server";
 import {
   Thumbnail,
   VideosBody,
   VideosResponse,
   PageInfo,
 } from "@shared/models/models";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { youtubeRequest } from "./youtubeRequest";
+import { youtubeRequest } from "../youtubeRequest";
 
 const YOUTUBE_CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID;
 if (!YOUTUBE_CHANNEL_ID) {
   throw new Error("Missing environment variable: YOUTUBE_CHANNEL_ID");
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<VideosResponse | { error: string; details?: any }>
-) {
-  if (req.method !== "GET") {
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
-
-  const pageToken =
-    typeof req.query.pageToken === "string" ? req.query.pageToken : "";
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const pageToken = searchParams.get("pageToken") || "";
 
   try {
     const data = await youtubeRequest<any>({
@@ -74,15 +67,16 @@ export default async function handler(
       pageInfo,
     };
 
-    return res.status(200).json(responseBody);
+    return NextResponse.json(responseBody);
   } catch (error: unknown) {
     let errorMessage = "Error fetching videos";
     if (error instanceof Error) {
       errorMessage = error.message;
       console.error("Error fetching videos:", error);
     }
-    return res
-      .status(500)
-      .json({ error: "Error fetching videos", details: errorMessage });
+    return NextResponse.json(
+      { error: "Error fetching videos", details: errorMessage },
+      { status: 500 }
+    );
   }
 }
