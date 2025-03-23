@@ -17,7 +17,7 @@ export default function LoginPage() {
 
   if (status === AuthStatus.Unauthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-300 via-gray-400 to-gray-700 p-4">
         <div className="bg-white w-full max-w-xl rounded-3xl p-16 shadow-xl flex overflow-hidden justify-center">
           <LoginButton />
         </div>
