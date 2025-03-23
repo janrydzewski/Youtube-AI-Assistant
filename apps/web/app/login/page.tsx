@@ -1,8 +1,10 @@
 "use client";
 
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
+import LoginButton from "./components/LoginButton";
+import Loader from "../components/Loader";
 
 export default function LoginPage() {
   const { data: session, status } = useSession();
@@ -15,25 +17,20 @@ export default function LoginPage() {
   }, [router, session]);
 
   if (status === "loading") {
+    return <Loader />;
+  }
+
+  if (status === "unauthenticated") {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-        <p>Ładowanie...</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white px-4">
+        <h1 className="text-4xl font-bold mb-6">Witaj w aplikacji</h1>
+        <p className="mb-8 text-lg">
+          Zaloguj się przy użyciu Google, aby kontynuować.
+        </p>
+        <LoginButton />
       </div>
     );
   }
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white px-4">
-      <h1 className="text-4xl font-bold mb-6">Witaj w aplikacji</h1>
-      <p className="mb-8 text-lg">
-        Zaloguj się przy użyciu Google, aby kontynuować.
-      </p>
-      <button
-        onClick={() => signIn("google")}
-        className="bg-white text-black font-bold py-2 px-4 rounded"
-      >
-        Zaloguj się
-      </button>
-    </div>
-  );
+  return <Loader />;
 }

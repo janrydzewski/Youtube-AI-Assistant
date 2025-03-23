@@ -15,8 +15,10 @@ export default async function handler(
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const videoId = typeof req.query.videoId === "string" ? req.query.videoId : null;
-  const pageToken = typeof req.query.pageToken === "string" ? req.query.pageToken : "";
+  const videoId =
+    typeof req.query.videoId === "string" ? req.query.videoId : null;
+  const pageToken =
+    typeof req.query.pageToken === "string" ? req.query.pageToken : "";
 
   if (!videoId) {
     return res.status(400).json({ error: "videoId parameter is required" });

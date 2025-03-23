@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { youtubeRequest } from "./youtubeRequest"; 
+import { youtubeRequest } from "./youtubeRequest";
 import type { AddReplyRequest, AddReplyResponse } from "@shared/models/youtube";
 
 export default async function handler(
@@ -23,7 +23,6 @@ export default async function handler(
   }
 
   try {
-
     const data = await youtubeRequest<any>({
       method: "POST",
       path: "/comments",

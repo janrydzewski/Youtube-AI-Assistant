@@ -47,13 +47,11 @@ export async function youtubeRequest<T>(config: {
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(
-        `YouTube API request failed: ${error.response?.status} - ${JSON.stringify(
-          error.response?.data
-        )}`
+        `YouTube API request failed: ${
+          error.response?.status
+        } - ${JSON.stringify(error.response?.data)}`
       );
     }
     throw error;
   }
 }
-
-
