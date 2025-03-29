@@ -20,10 +20,17 @@ export default function VideoPage() {
     <div className="min-h-screen bg-gradient-to-r from-gray-300 via-gray-400 to-gray-700 p-6">
       <header className="flex justify-between items-center mb-10">
         <button
-          onClick={() => router.push("/dashboard/videos")}
+          onClick={() => {
+            const fromChannel = localStorage.getItem("selectedChannelId");
+            if (fromChannel) {
+              router.push("/dashboard/videos");
+            } else {
+              router.push("/dashboard");
+            }
+          }}
           className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow transition"
         >
-          Back to Videos
+          Back
         </button>
       </header>
 
