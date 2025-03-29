@@ -6,6 +6,7 @@ import VideoCard from "../../components/VideoCard";
 import { VideosBody, CommentBody } from "@shared/models/youtube";
 import Loader from "@/app/components/Loader";
 import ErrorComponent from "@/app/components/ErrorComponent";
+import CommentCard from "../../components/CommentCard";
 
 export default function VideoPage() {
   const { id } = useParams();
@@ -28,8 +29,6 @@ export default function VideoPage() {
         const resComments = await fetch(`/api/youtube/comments?videoId=${id}`);
         if (!resComments.ok) throw new Error("Error fetching comments");
         const commentsData = await resComments.json();
-        console.log("commentsData:", commentsData);
-
         setComments(commentsData.items || []);
       } catch (err: any) {
         setError(err.message || "Unknown error");
@@ -44,33 +43,30 @@ export default function VideoPage() {
   if (error) return <ErrorComponent error={error} />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-300 via-gray-400 to-gray-700 relative p-8">
-      <header className="relative mb-8">
+    <div className="min-h-screen bg-gradient-to-r from-gray-300 via-gray-400 to-gray-700 p-6">
+      <header className="flex justify-between items-center mb-10">
         <button
           onClick={() => router.push("/dashboard/videos")}
-          className="btn btn-soft"
+          className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow transition"
         >
-          Back
+          Back to Videos
         </button>
       </header>
+
       {video && (
-        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <div className="max-w-3xl mx-auto mb-12">
           <VideoCard video={video} />
         </div>
       )}
-      <div>
-        <div className="space-y-4 mt-10">
+
+      <section className="max-w-6xl mx-auto">
+        <h2 className="text-2xl font-bold text-white mb-6">Comments</h2>
+        <div className="space-y-4">
           {comments.map((comment) => (
-            <div key={comment.id} className="p-4 bg-white rounded shadow">
-              <p className="font-semibold text-black">{comment.author.name}</p>
-              <p className="text-gray-600">{comment.text}</p>
-              <p className="text-gray-500 text-sm">
-                {new Date(comment.publishedAt).toLocaleDateString()}
-              </p>
-            </div>
+            <CommentCard key={comment.id} comment={comment} />
           ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 }
