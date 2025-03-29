@@ -35,9 +35,9 @@ export async function GET(request: Request) {
 
     const mappedItems: VideosBody[] = filteredItems.map((item: any) => {
       const thumb: Thumbnail = {
-        url: item.snippet.thumbnails?.default?.url || "",
-        width: item.snippet.thumbnails?.default?.width || 0,
-        height: item.snippet.thumbnails?.default?.height || 0,
+        url: item.snippet.thumbnails?.high?.url || "",
+        width: item.snippet.thumbnails?.high?.width || 0,
+        height: item.snippet.thumbnails?.high?.height || 0,
       };
 
       return {
