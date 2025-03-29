@@ -1,9 +1,12 @@
 "use client";
 
 import { VideosResponse } from "@shared/models/youtube";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import VideoCard from "../components/VideoCard";
+import Link from "next/link";
+import Loader from "@/app/components/Loader";
+import ErrorComponent from "@/app/components/ErrorComponent";
 
 export default function VideosPage() {
   const [videosData, setVideosData] = useState<VideosResponse | null>(null);
@@ -30,19 +33,9 @@ export default function VideosPage() {
     fetchVideos();
   }, []);
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Loading...
-      </div>
-    );
+  if (loading) return <Loader />;
 
-  if (error)
-    return (
-      <div className="flex items-center justify-center min-h-screen text-red-600">
-        {error}
-      </div>
-    );
+  if (error) return <ErrorComponent error={error} />;
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-300 via-gray-400 to-gray-700 relative p-8">
@@ -57,29 +50,13 @@ export default function VideosPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {videosData?.items.map((video) => (
-          <div
+          <Link
             key={video.videoId}
-            className="card bg-white shadow-md rounded-xl overflow-hidden"
+            href={`/dashboard/videos/${video.videoId}`}
+            className="cursor-pointer"
           >
-            <Image
-              src={video.thumbnail.url}
-              alt={video.title}
-              width={video.thumbnail.width}
-              height={video.thumbnail.height}
-              className="w-full object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold mb-2 text-black">
-                {video.title}
-              </h2>
-              <p className="text-gray-600 mb-2 line-clamp-2">
-                {video.description}
-              </p>
-              <p className="text-gray-500 text-sm">
-                {new Date(video.publishedAt).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
+            <VideoCard key={video.videoId} video={video} />
+          </Link>
         ))}
       </div>
     </div>

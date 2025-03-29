@@ -67,7 +67,7 @@ export default function DashboardPage() {
               <input
                 type="text"
                 placeholder="Type channel name"
-                className="input input-bordered w-full bg-gray-100"
+                className="input input-bordered w-full bg-gray-700 text-white"
                 value={channelName}
                 onChange={(e) => setChannelName(e.target.value)}
               />
@@ -77,14 +77,14 @@ export default function DashboardPage() {
               <label className="block text-gray-800 text-xl font-semibold mb-2">
                 Or paste video link
               </label>
-              <label className="input input-bordered w-full bg-gray-100 flex items-center">
+              <label className="input input-bordered w-full bg-gray-700 flex items-center">
                 <LinkLogo />
                 <input
                   type="url"
                   placeholder="https://"
                   pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9\-].*[a-zA-Z0-9])?\.)+[a-zA-Z].*$"
                   title="Must be a valid URL"
-                  className="flex-1 ml-2 bg-transparent outline-none border-none"
+                  className="flex-1 ml-2 outline-none border-none  text-white"
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
                 />
