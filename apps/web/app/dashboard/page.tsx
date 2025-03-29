@@ -1,53 +1,23 @@
 "use client";
 
-import React, { useState, useEffect, FormEvent } from "react";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import Loader from "../components/Loader";
-import { AuthStatus } from "../models/AuthStatus";
 import LinkLogo from "./components/LinkLogo";
 import NextLogo from "./components/NextLogo";
+import { useAuthRedirect } from "../hooks/useAuthRedirect";
+import { AuthStatus } from "../models/AuthStatus";
+import { useChannelForm } from "./hooks/useChannelForm";
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [channelName, setChannelName] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
+  const { session, status } = useAuthRedirect({
+    redirectIfUnauthenticated: true,
+    redirectTo: "/login",
+  });
+  const { channelName, setChannelName, videoUrl, setVideoUrl, handleSubmit } =
+    useChannelForm();
 
-  useEffect(() => {
-    if (status !== "loading" && !session) {
-      router.push("/login");
-    }
-  }, [session, status, router]);
-
-  if (status === AuthStatus.Loading) {
-    return <Loader />;
-  }
-
+  if (status === AuthStatus.Loading) return <Loader />;
   if (!session) return null;
-
-  const handleChannelSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!channelName.trim() && !videoUrl.trim()) {
-      alert("Please enter a channel name or a video URL");
-      return;
-    }
-    if (channelName.trim()) {
-      try {
-        const res = await fetch("/api/youtube/set-channel-id", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ handle: channelName.trim() }),
-        });
-        if (!res.ok) throw new Error("Error setting channel");
-        router.push("/dashboard/videos");
-      } catch (error) {
-        console.error("Error: ", error);
-      }
-    } else if (videoUrl.trim()) {
-      router.push("/videos");
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-300 via-gray-400 to-gray-700 relative">
@@ -66,7 +36,7 @@ export default function DashboardPage() {
             Connect a channel or video
           </h1>
 
-          <form onSubmit={handleChannelSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8">
             <div>
               <label className="block text-white text-lg font-medium mb-2">
                 Channel Name

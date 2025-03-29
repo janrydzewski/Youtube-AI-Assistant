@@ -1,14 +1,38 @@
-import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export const useAuthRedirect = (redirectTo: string) => {
-  const { data: session } = useSession();
+interface UseAuthRedirectOptions {
+  redirectIfUnauthenticated?: boolean;
+
+  redirectIfAuthenticated?: boolean;
+
+  redirectTo: string;
+}
+
+export function useAuthRedirect({
+  redirectIfUnauthenticated = false,
+  redirectIfAuthenticated = false,
+  redirectTo,
+}: UseAuthRedirectOptions) {
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (session) {
-      router.replace(redirectTo);
+    if (
+      (redirectIfUnauthenticated && status !== "loading" && !session) ||
+      (redirectIfAuthenticated && status === "authenticated")
+    ) {
+      router.push(redirectTo);
     }
-  }, [session, router, redirectTo]);
-};
+  }, [
+    session,
+    status,
+    redirectIfUnauthenticated,
+    redirectIfAuthenticated,
+    redirectTo,
+    router,
+  ]);
+
+  return { session, status };
+}

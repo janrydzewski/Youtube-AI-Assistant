@@ -1,35 +1,15 @@
 "use client";
 
-import { VideosResponse } from "@shared/models/youtube";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import VideoCard from "../components/VideoCard";
 import Link from "next/link";
 import Loader from "@/app/components/Loader";
 import ErrorComponent from "@/app/components/ErrorComponent";
+import { useVideos } from "../hooks/useVideos";
 
 export default function VideosPage() {
-  const [videosData, setVideosData] = useState<VideosResponse | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { videosData, loading, error } = useVideos();
   const router = useRouter();
-
-  const fetchVideos = async () => {
-    try {
-      const res = await fetch("/api/youtube/videos");
-      if (!res.ok) throw new Error("Error fetching videos");
-      const data: VideosResponse = await res.json();
-      setVideosData(data);
-    } catch (err: any) {
-      setError(err.message || "Unknown error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchVideos();
-  }, []);
 
   if (loading) return <Loader />;
   if (error) return <ErrorComponent error={error} />;
