@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/app/injectable_config.dart';
 import 'package:mobile/core/widgets/app_background.dart';
 import 'package:mobile/core/widgets/card_container.dart';
 import 'package:mobile/features/auth/cubit/auth_cubit.dart';
@@ -27,7 +27,7 @@ class DashboardPage extends StatelessWidget {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {
-                    context.read<AuthCubit>().signOut();
+                    locator<AuthCubit>().signOut();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,

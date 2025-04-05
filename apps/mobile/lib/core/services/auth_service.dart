@@ -1,5 +1,7 @@
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:injectable/injectable.dart';
 
+@Singleton()
 class AuthService {
   final _googleSignIn = GoogleSignIn(
     scopes: [
@@ -8,10 +10,12 @@ class AuthService {
     ],
   );
 
+  Stream<GoogleSignInAccount?> get currentUser =>
+      _googleSignIn.onCurrentUserChanged;
+
   Future<GoogleSignInAccount?> signInWithGoogle() async {
     try {
-      final account = await _googleSignIn.signIn();
-      return account;
+      return await _googleSignIn.signIn();
     } catch (_) {
       return null;
     }
@@ -21,17 +25,19 @@ class AuthService {
     await _googleSignIn.signOut();
   }
 
+  Future<GoogleSignInAccount?> getAccount() async {
+    return _googleSignIn.currentUser ?? await _googleSignIn.signInSilently();
+  }
+
   Future<String?> getAccessToken() async {
-    final account = _googleSignIn.currentUser ?? await _googleSignIn.signInSilently();
+    final account = await getAccount();
     final auth = await account?.authentication;
     return auth?.accessToken;
   }
 
   Future<String?> getIdToken() async {
-    final account = _googleSignIn.currentUser ?? await _googleSignIn.signInSilently();
+    final account = await getAccount();
     final auth = await account?.authentication;
     return auth?.idToken;
   }
-
-  GoogleSignInAccount? get currentUser => _googleSignIn.currentUser;
 }
