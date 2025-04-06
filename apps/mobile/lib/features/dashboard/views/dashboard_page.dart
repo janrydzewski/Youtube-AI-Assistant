@@ -29,15 +29,6 @@ class DashboardPage extends StatelessWidget {
                   onPressed: () {
                     locator<AuthCubit>().signOut();
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
-                  ),
                   child: const Text("Sign Out"),
                 ),
               ],
