@@ -1,3 +1,4 @@
+import { colors } from "@/app/styles/theme";
 import { CommentBody } from "@shared/models/youtube";
 
 interface CommentCardProps {
@@ -6,10 +7,17 @@ interface CommentCardProps {
 
 export default function CommentCard({ comment }: CommentCardProps) {
   return (
-    <div className="bg-gray-800 bg-opacity-90 backdrop-blur p-5 rounded-xl shadow border border-white border-opacity-10">
-      <p className="font-semibold text-white mb-1">{comment.author.name}</p>
-      <p className="text-gray-300 mb-2">{comment.text}</p>
-      <p className="text-gray-400 text-sm">
+    <div
+      className="bg-white p-5 rounded-xl shadow-sm border"
+      style={{ borderColor: colors.border }}
+    >
+      <p className="font-semibold mb-2" style={{ color: colors.textPrimary }}>
+        {comment.author.name}
+      </p>
+      <p className="mb-3" style={{ color: colors.textSecondary }}>
+        {comment.text}
+      </p>
+      <p className="text-sm" style={{ color: colors.textSecondary }}>
         {new Date(comment.publishedAt).toLocaleDateString()}
       </p>
     </div>

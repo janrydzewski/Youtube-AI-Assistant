@@ -1,3 +1,4 @@
+import { colors } from "@/app/styles/theme";
 import { VideosBody } from "@shared/models/models";
 import Image from "next/image";
 
@@ -6,8 +7,15 @@ interface VideoCardProps {
 }
 
 export default function VideoCard({ video }: VideoCardProps) {
+  const openVideoInNewTab = () => {
+    window.open(`https://www.youtube.com/watch?v=${video.videoId}`, "_blank");
+  };
   return (
-    <div className="bg-gray-800 bg-opacity-90 backdrop-blur rounded-xl overflow-hidden shadow-xl transition hover:scale-[1.02] duration-200 border border-white border-opacity-10 w-full h-full">
+    <div
+      onClick={openVideoInNewTab}
+      className="bg-white rounded-xl overflow-hidden shadow-md transition hover:scale-[1.02] duration-200 border w-full h-full"
+      style={{ borderColor: colors.border }}
+    >
       <div className="relative w-full aspect-video">
         <Image
           src={video.thumbnail.url}
@@ -18,14 +26,20 @@ export default function VideoCard({ video }: VideoCardProps) {
       </div>
       <div className="p-4 h-[150px] flex flex-col justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-white mb-1 line-clamp-2">
+          <h2
+            className="text-lg font-semibold mb-2 line-clamp-2"
+            style={{ color: colors.textPrimary }}
+          >
             {video.title}
           </h2>
-          <p className="text-gray-300 text-sm mb-2 line-clamp-2">
+          <p
+            className="text-sm mb-2 line-clamp-2"
+            style={{ color: colors.textSecondary }}
+          >
             {video.description}
           </p>
         </div>
-        <p className="text-gray-400 text-xs">
+        <p className="text-xs" style={{ color: colors.textSecondary }}>
           {new Date(video.publishedAt).toLocaleDateString()}
         </p>
       </div>

@@ -6,6 +6,7 @@ import Link from "next/link";
 import Loader from "@/app/components/Loader";
 import ErrorComponent from "@/app/components/ErrorComponent";
 import { useVideos } from "../hooks/useVideos";
+import { colors } from "@/app/styles/theme";
 
 export default function VideosPage() {
   const { videosData, loading, error } = useVideos();
@@ -15,15 +16,25 @@ export default function VideosPage() {
   if (error) return <ErrorComponent error={error} />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-300 via-gray-400 to-gray-700 p-6">
+    <div
+      className="min-h-screen p-6"
+      style={{ backgroundColor: colors.backgroundSecondary }}
+    >
       <header className="relative mb-10 h-12">
         <button
           onClick={() => router.push("/dashboard")}
-          className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow transition absolute left-0 top-1/2 transform -translate-y-1/2"
+          className="px-4 py-2 rounded-lg font-semibold shadow-sm transition absolute left-0 top-1/2 transform -translate-y-1/2"
+          style={{
+            backgroundColor: colors.accent,
+            color: "#FFFFFF",
+          }}
         >
           Back to Dashboard
         </button>
-        <h1 className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl font-bold text-white">
+        <h1
+          className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl font-bold"
+          style={{ color: colors.textPrimary }}
+        >
           {videosData?.channelName}
         </h1>
       </header>

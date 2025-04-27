@@ -6,18 +6,21 @@ import Loader from "@/app/components/Loader";
 import ErrorComponent from "@/app/components/ErrorComponent";
 import CommentCard from "../../components/CommentCard";
 import { useVideoWithComments } from "../../hooks/useVideoWithComments";
+import { colors } from "@/app/styles/theme";
 
 export default function VideoPage() {
   const { id } = useParams();
   const router = useRouter();
-
   const { video, comments, loading, error } = useVideoWithComments(id);
 
   if (loading) return <Loader />;
   if (error) return <ErrorComponent error={error} />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-300 via-gray-400 to-gray-700 p-6">
+    <div
+      className="min-h-screen p-6"
+      style={{ backgroundColor: colors.backgroundSecondary }}
+    >
       <header className="flex justify-between items-center mb-10">
         <button
           onClick={() => {
@@ -28,7 +31,11 @@ export default function VideoPage() {
               router.push("/dashboard");
             }
           }}
-          className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow transition"
+          className="px-4 py-2 rounded-lg font-semibold shadow-sm transition"
+          style={{
+            backgroundColor: colors.accent,
+            color: "#FFFFFF",
+          }}
         >
           Back
         </button>
@@ -41,7 +48,12 @@ export default function VideoPage() {
       )}
 
       <section className="max-w-6xl mx-auto">
-        <h2 className="text-2xl font-bold text-white mb-6">Comments</h2>
+        <h2
+          className="text-2xl font-bold mb-6"
+          style={{ color: colors.textPrimary }}
+        >
+          Comments
+        </h2>
         <div className="space-y-4">
           {comments.map((comment) => (
             <CommentCard key={comment.id} comment={comment} />

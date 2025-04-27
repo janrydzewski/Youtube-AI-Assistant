@@ -1,15 +1,21 @@
 import { signIn } from "next-auth/react";
 import React from "react";
 import GoogleLogo from "./GoogleLogo";
+import { colors } from "@/app/styles/theme";
 
 const LoginButton = () => {
   return (
     <button
-      className="btn bg-white btn-wide btn-lg text-black border-[#e5e5e5] flex items-center gap-2 shadow-md rounded-lg"
+      className="btn btn-wide btn-lg flex items-center gap-3 rounded-lg shadow-sm border"
+      style={{
+        backgroundColor: colors.background,
+        color: colors.textPrimary,
+        borderColor: colors.border,
+      }}
       onClick={() => signIn("google")}
     >
       <GoogleLogo />
-      Login with Google
+      Sign in with Google
     </button>
   );
 };
