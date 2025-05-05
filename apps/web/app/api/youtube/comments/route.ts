@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import type { CommentResponse } from "@shared/models/models";
 import { fetchComments } from "../commentsHelpers";
+import { youtubeRequest } from "../youtubeRequest";
+
+const commentCountCache = new Map<string, number>();
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,11 +17,30 @@ export async function GET(request: Request) {
   }
 
   try {
-    const responseBody: CommentResponse = await fetchComments(
-      videoId,
-      pageToken
-    );
-    return NextResponse.json(responseBody);
+    let realTotalResults = commentCountCache.get(videoId) || null;
+
+    if (!realTotalResults && !pageToken) {
+      const statsData = await youtubeRequest<any>({
+        method: "GET",
+        path: "/videos",
+        params: {
+          part: "statistics",
+          id: videoId,
+        },
+      });
+      realTotalResults = parseInt(
+        statsData.items?.[0]?.statistics?.commentCount || "0",
+        10
+      );
+      commentCountCache.set(videoId, realTotalResults);
+    }
+
+    const responseBody = await fetchComments(videoId, pageToken);
+
+    return NextResponse.json({
+      ...responseBody,
+      realTotalResults,
+    });
   } catch (error: unknown) {
     let errorMessage = "Error fetching comments";
     if (error instanceof Error) {

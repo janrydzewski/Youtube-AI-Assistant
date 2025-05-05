@@ -40,6 +40,7 @@ export interface CommentResponse {
   channelId: string;
   items: CommentBody[];
   pageInfo: PageInfo;
+  realTotalResults?: number;
 }
 export interface Author {
   name: string;

@@ -6,7 +6,10 @@ import type {
   PageInfo,
 } from "@shared/models/models";
 
-export async function fetchComments(videoId: string, pageToken = ""): Promise<CommentResponse> {
+export async function fetchComments(
+  videoId: string,
+  pageToken = ""
+): Promise<Omit<CommentResponse, "realTotalResults">> {
   const data = await youtubeRequest<any>({
     method: "GET",
     path: "/commentThreads",
