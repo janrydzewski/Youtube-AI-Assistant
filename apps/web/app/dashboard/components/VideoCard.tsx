@@ -13,7 +13,7 @@ const VideoCard = forwardRef<YouTubePlayerHandle, VideoCardProps>(
   ({ video, withPlayer = false }, ref) => {
     return (
       <div
-        className="bg-white rounded-xl overflow-hidden shadow-md transition hover:scale-[1.02] duration-200 border w-full cursor-pointer flex flex-col"
+        className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-md transition hover:scale-[1.02] duration-200 border"
         style={{ borderColor: colors.border }}
       >
         <div className="w-full aspect-video relative">
