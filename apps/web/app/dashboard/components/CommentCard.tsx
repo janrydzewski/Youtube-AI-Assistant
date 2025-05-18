@@ -63,7 +63,24 @@ export default function CommentCard({
 
       if (!res.ok) throw new Error("Failed to add reply");
 
-      await res.json();
+      const { reply } = await res.json();
+      comment.replies?.push({
+        id: reply.id,
+        text: reply.text,
+        author: {
+          name: reply.author,
+          profileImageUrl: "",
+          authorChannelUrl: "",
+        },
+        publishedAt: new Date(reply.publishedAt),
+        updatedAt: new Date(reply.publishedAt),
+        likeCount: 0,
+        canReply: false,
+        totalReplyCount: 0,
+        isPublic: true,
+        replies: [],
+      });
+
       setAddSuccess(true);
     } catch (err) {
       console.error("Error adding reply:", err);
