@@ -35,6 +35,7 @@ export interface CommentBody {
   canReply: boolean;
   totalReplyCount: number;
   isPublic: boolean;
+  replies?: CommentBody[];
 }
 export interface CommentResponse {
   channelId: string;

@@ -11,13 +11,8 @@ export function useVideoWithComments(videoId?: string | string[]) {
   const [error, setError] = useState<string | null>(null);
 
   const loadMore = useCallback(async () => {
-    if (
-      !videoId ||
-      (!pageToken &&
-        realTotalResults !== null &&
-        comments.length >= realTotalResults)
-    ) {
-      console.log("No more comments to load.");
+    if (!videoId || !pageToken) {
+      console.log("No videoId or pageToken, skipping loadMore.");
       return;
     }
 
@@ -27,16 +22,32 @@ export function useVideoWithComments(videoId?: string | string[]) {
         `/api/youtube/comments?videoId=${videoId}&pageToken=${pageToken}`
       );
       if (!res.ok) throw new Error("Error fetching more comments");
+
       const commentsData = await res.json();
+
+      if (
+        !commentsData.pageInfo?.nextPageToken ||
+        commentsData.items.length === 0
+      ) {
+        console.log("No more comments to load");
+        setPageToken(null);
+        return;
+      }
+
+      if (commentsData.pageInfo.nextPageToken === pageToken) {
+        console.warn("Same page token received, stopping infinite loop");
+        setPageToken(null);
+        return;
+      }
+
       setComments((prev) => [...prev, ...(commentsData.items || [])]);
-      setPageToken(commentsData.pageInfo?.nextPageToken || null);
-    } catch (err: any) {
+      setPageToken(commentsData.pageInfo.nextPageToken || null);
+    } catch (err) {
       console.error("Error loading more comments:", err);
     } finally {
       setLoadingMore(false);
     }
-  }, [videoId, pageToken, realTotalResults, comments.length]);
-
+  }, [videoId, pageToken]);
   useEffect(() => {
     if (!videoId) return;
 

@@ -7,7 +7,10 @@ const commentCountCache = new Map<string, number>();
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const videoId = searchParams.get("videoId");
-  const pageToken = searchParams.get("pageToken") || "";
+  let pageToken = searchParams.get("pageToken") || undefined;
+  if (!pageToken || pageToken === "null" || pageToken === "undefined") {
+    pageToken = undefined;
+  }
 
   if (!videoId) {
     return NextResponse.json(

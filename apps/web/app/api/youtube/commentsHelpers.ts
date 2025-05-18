@@ -15,8 +15,7 @@ export async function fetchComments(
     path: "/commentThreads",
     params: {
       videoId,
-      part: "snippet",
-      maxResults: 10,
+      part: "snippet,replies",
       ...(pageToken && { pageToken }),
     },
   });
@@ -25,25 +24,46 @@ export async function fetchComments(
 
   const mappedItems: CommentBody[] = items.map((item: any) => {
     const snippet = item.snippet;
-    const topLevelSnippet = snippet.topLevelComment.snippet;
+    const topLevel = snippet.topLevelComment.snippet;
 
     const author: Author = {
-      name: topLevelSnippet.authorDisplayName,
-      profileImageUrl: topLevelSnippet.authorProfileImageUrl,
-      authorChannelUrl: topLevelSnippet.authorChannelUrl,
+      name: topLevel.authorDisplayName,
+      profileImageUrl: topLevel.authorProfileImageUrl,
+      authorChannelUrl: topLevel.authorChannelUrl,
     };
 
-    return {
-      id: item.id,
-      text: topLevelSnippet.textDisplay,
+    const topLevelComment: CommentBody = {
+      id: item.snippet.topLevelComment.id,
+      text: topLevel.textDisplay,
       author,
-      likeCount: topLevelSnippet.likeCount,
-      publishedAt: new Date(topLevelSnippet.publishedAt),
-      updatedAt: new Date(topLevelSnippet.updatedAt),
+      likeCount: topLevel.likeCount,
+      publishedAt: new Date(topLevel.publishedAt),
+      updatedAt: new Date(topLevel.updatedAt),
       canReply: snippet.canReply,
       totalReplyCount: snippet.totalReplyCount,
       isPublic: snippet.isPublic,
+      replies:
+        item.replies?.comments?.map((reply: any) => {
+          const replySnippet = reply.snippet;
+          return {
+            id: reply.id,
+            text: replySnippet.textDisplay,
+            author: {
+              name: replySnippet.authorDisplayName,
+              profileImageUrl: replySnippet.authorProfileImageUrl,
+              authorChannelUrl: replySnippet.authorChannelUrl,
+            },
+            likeCount: replySnippet.likeCount,
+            publishedAt: new Date(replySnippet.publishedAt),
+            updatedAt: new Date(replySnippet.updatedAt),
+            canReply: false,
+            totalReplyCount: 0,
+            isPublic: true,
+          };
+        }) ?? [],
     };
+
+    return topLevelComment;
   });
 
   const channelId = items[0]?.snippet?.channelId ?? "UnknownChannel";

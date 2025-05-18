@@ -3,6 +3,16 @@ import type { AddReplyRequest, AddReplyResponse } from "@shared/models/youtube";
 import { youtubeRequest } from "../youtubeRequest";
 
 export async function POST(request: Request) {
+  const authHeader = request.headers.get("Authorization");
+  const accessToken = authHeader?.replace("Bearer ", "");
+
+  if (!accessToken) {
+    return NextResponse.json(
+      { error: "Missing access token" },
+      { status: 401 }
+    );
+  }
+
   try {
     const { commentId, text } = (await request.json()) as AddReplyRequest;
 
@@ -12,6 +22,7 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
     if (!text || typeof text !== "string") {
       return NextResponse.json(
         { error: "text is required and must be a string" },
@@ -31,23 +42,25 @@ export async function POST(request: Request) {
           textOriginal: text,
         },
       },
+      accessToken,
     });
 
-    const createdReply = data?.items?.[0];
-    if (!createdReply) {
+    console.log("YouTube API raw response:", JSON.stringify(data, null, 2));
+
+    const snippet = data.snippet;
+    if (!snippet) {
       return NextResponse.json(
         {
           error: "Failed to create reply",
-          details: "No reply returned from YouTube API",
+          details: "Missing snippet in YouTube API response",
         },
         { status: 500 }
       );
     }
 
-    const snippet = createdReply.snippet;
     const replyBody: AddReplyResponse = {
       reply: {
-        id: createdReply.id,
+        id: data.id,
         text: snippet.textDisplay,
         author: snippet.authorDisplayName,
         publishedAt: new Date(snippet.publishedAt),
